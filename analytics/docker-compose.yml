@@ -1,0 +1,34 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: eduflow-clickhouse
+    environment:
+      CLICKHOUSE_USER: eduflow
+      CLICKHOUSE_PASSWORD: eduflow
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "8123:8123" # HTTP
+      - "9000:9000" # native
+    volumes:
+      - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
+      - clickhouse-data:/var/lib/clickhouse
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: eduflow-grafana
+    depends_on: [clickhouse]
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  clickhouse-data:
+  grafana-data:
