@@ -9,14 +9,14 @@
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_ai_grades AS
 SELECT
-    ga.roadmap_id,
-    ga.student_id,
-    ga.node_id,
-    ga.method,                  -- test или review
+    ga.roadmap_id               AS roadmap_id,
+    ga.student_id               AS student_id,
+    ga.node_id                  AS node_id,
+    ga.method                   AS method,          -- test или review
     ga.grade                    AS ai_grade,
     ga.ts                       AS ai_ts,
-    ga.attempt,
-    r.teacher_id,
+    ga.attempt                  AS attempt,
+    r.teacher_id                AS teacher_id,
     t.name                      AS teacher_name,
     gc.new_grade                AS corrected_grade,
     gc.ts                       AS correction_ts,
@@ -74,7 +74,7 @@ ORDER BY correction_rate DESC;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_ai_correction_by_method AS
 SELECT
-    method,
+    method                                          AS method,
     count()                                         AS ai_grades,
     countIf(was_corrected)                          AS corrected_cnt,
     round(countIf(was_corrected) / count(), 4)      AS correction_rate,

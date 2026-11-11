@@ -181,8 +181,8 @@ ORDER BY bottleneck_score DESC;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_student_last_activity AS
 SELECT
-    s.student_id,
-    s.group_id,
+    s.student_id                                    AS student_id,
+    s.group_id                                      AS group_id,
     g.name                                          AS group_name,
     s.name                                          AS student_name,
     max(a.ts)                                       AS last_activity_ts,
@@ -192,18 +192,22 @@ LEFT JOIN eduflow.student_activity AS a
     ON a.student_id = s.student_id
 LEFT JOIN eduflow.groups AS g
     ON g.group_id = s.group_id
-GROUP BY s.student_id, s.group_id, group_name, student_name;
+GROUP BY
+    s.student_id,
+    s.group_id,
+    g.name,
+    s.name;
 
 
 -- Студенты группы риска (по умолчанию > 21 дня без активности)
 CREATE OR REPLACE VIEW eduflow.v_risk_students AS
 SELECT
-    student_id,
-    group_id,
-    group_name,
-    student_name,
-    last_activity_ts,
-    days_inactive
+    student_id                                      AS student_id,
+    group_id                                        AS group_id,
+    group_name                                      AS group_name,
+    student_name                                    AS student_name,
+    last_activity_ts                                AS last_activity_ts,
+    days_inactive                                   AS days_inactive
 FROM eduflow.v_student_last_activity
 WHERE days_inactive > 21
    OR last_activity_ts IS NULL
@@ -211,13 +215,19 @@ ORDER BY days_inactive DESC;
 
 
 -- Сводка группы риска по группам
+-- Без коррелированных подзапросов (ClickHouse 26 их не поддерживает в ORDER BY).
 CREATE OR REPLACE VIEW eduflow.v_risk_by_group AS
 SELECT
-    group_id,
-    group_name,
+    r.group_id                                      AS group_id,
+    r.group_name                                    AS group_name,
     count()                                         AS risk_students,
-    (SELECT count() FROM eduflow.students s2 WHERE s2.group_id = r.group_id) AS total_students,
-    round(count() / (SELECT count() FROM eduflow.students s2 WHERE s2.group_id = r.group_id), 4) AS risk_share
+    any(s.total_students)                           AS total_students,
+    round(count() / any(s.total_students), 4)       AS risk_share
 FROM eduflow.v_risk_students AS r
-GROUP BY group_id, group_name
+INNER JOIN (
+    SELECT group_id, count() AS total_students
+    FROM eduflow.students
+    GROUP BY group_id
+) AS s ON s.group_id = r.group_id
+GROUP BY r.group_id, r.group_name
 ORDER BY risk_share DESC;

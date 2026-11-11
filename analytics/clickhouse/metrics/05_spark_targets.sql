@@ -53,7 +53,7 @@ ORDER BY (rank, node_id);
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS eduflow.metric_ai_vs_teacher
 (
-    teacher_id          Nullable(UInt32),  -- NULL = общая строка «ALL»
+    teacher_id          UInt32,            -- 0 = общая строка «ALL»
     teacher_name        String,
     method              LowCardinality(String),  -- 'test' | 'review' | 'ALL'
     ai_grades           UInt64,

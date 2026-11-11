@@ -351,7 +351,7 @@ def compute_ai_vs_teacher(spark: SparkSession) -> DataFrame:
     # общая строка ALL × method
     by_method = (
         agg_block(joined, ["method"])
-        .withColumn("teacher_id", F.lit(None).cast("int"))
+        .withColumn("teacher_id", F.lit(0).cast("int"))
         .withColumn("teacher_name", F.lit("ALL"))
         .withColumn("method", F.col("method").cast("string"))
     )
@@ -359,7 +359,7 @@ def compute_ai_vs_teacher(spark: SparkSession) -> DataFrame:
     # общая строка ALL / ALL
     overall = (
         agg_block(joined, [])
-        .withColumn("teacher_id", F.lit(None).cast("int"))
+        .withColumn("teacher_id", F.lit(0).cast("int"))
         .withColumn("teacher_name", F.lit("ALL"))
         .withColumn("method", F.lit("ALL"))
     )

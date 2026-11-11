@@ -10,11 +10,11 @@
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_final_grade AS
 SELECT
-    ga.roadmap_id,
-    ga.student_id,
-    ga.node_id,
-    ga.method,
-    ga.source,
+    ga.roadmap_id                                   AS roadmap_id,
+    ga.student_id                                   AS student_id,
+    ga.node_id                                      AS node_id,
+    ga.method                                       AS method,
+    ga.source                                       AS source,
     if(gc.new_grade IS NOT NULL, gc.new_grade, ga.grade) AS final_grade,
     ga.grade                                            AS original_grade,
     gc.new_grade IS NOT NULL                            AS was_corrected,
@@ -44,10 +44,10 @@ WHERE ga.rn = 1;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_avg_grade_by_node AS
 SELECT
-    f.node_id,
+    f.node_id                                       AS node_id,
     tn.title                                        AS node_title,
-    tn.check_method,
-    r.template_id,
+    tn.check_method                                 AS check_method,
+    r.template_id                                   AS template_id,
     tpl.name                                        AS template_name,
     count()                                         AS grades_cnt,
     round(avg(f.final_grade), 2)                    AS avg_grade,
@@ -70,7 +70,7 @@ ORDER BY avg_grade;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_avg_grade_by_template AS
 SELECT
-    r.template_id,
+    r.template_id                                   AS template_id,
     tpl.name                                        AS template_name,
     count()                                         AS grades_cnt,
     round(avg(f.final_grade), 2)                    AS avg_grade,
@@ -89,7 +89,7 @@ ORDER BY avg_grade;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_avg_grade_by_group AS
 SELECT
-    r.group_id,
+    r.group_id                                      AS group_id,
     g.name                                          AS group_name,
     count()                                         AS grades_cnt,
     round(avg(f.final_grade), 2)                    AS avg_grade,
@@ -108,7 +108,7 @@ ORDER BY avg_grade;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_avg_grade_by_teacher AS
 SELECT
-    r.teacher_id,
+    r.teacher_id                                    AS teacher_id,
     t.name                                          AS teacher_name,
     count()                                         AS grades_cnt,
     round(avg(f.final_grade), 2)                    AS avg_grade,
@@ -128,7 +128,7 @@ ORDER BY avg_grade;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_grades_by_method AS
 SELECT
-    f.method,
+    f.method                                        AS method,
     count()                                         AS grades_cnt,
     round(avg(f.final_grade), 2)                    AS avg_grade,
     round(quantile(0.5)(f.final_grade), 1)          AS median_grade,
@@ -146,9 +146,9 @@ ORDER BY f.method;
 -- Детализация: сравнение методов внутри одного шаблона (сопоставимые ноды)
 CREATE OR REPLACE VIEW eduflow.v_grades_by_method_template AS
 SELECT
-    r.template_id,
+    r.template_id                                   AS template_id,
     tpl.name                                        AS template_name,
-    f.method,
+    f.method                                        AS method,
     count()                                         AS grades_cnt,
     round(avg(f.final_grade), 2)                    AS avg_grade,
     round(quantile(0.5)(f.final_grade), 1)          AS median_grade

@@ -9,7 +9,7 @@
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_teacher_load AS
 SELECT
-    r.teacher_id,
+    r.teacher_id                                    AS teacher_id,
     t.name                                          AS teacher_name,
     count()                                         AS roadmaps_cnt,
     countDistinct(r.group_id)                       AS groups_cnt,
@@ -27,12 +27,12 @@ ORDER BY roadmaps_cnt DESC;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_roadmaps_without_teacher AS
 SELECT
-    r.roadmap_id,
-    r.group_id,
+    r.roadmap_id                                    AS roadmap_id,
+    r.group_id                                      AS group_id,
     g.name                                          AS group_name,
-    r.template_id,
+    r.template_id                                   AS template_id,
     tpl.name                                        AS template_name,
-    r.created_at
+    r.created_at                                    AS created_at
 FROM eduflow.roadmaps AS r
 LEFT JOIN eduflow.groups AS g
     ON g.group_id = r.group_id
@@ -47,13 +47,13 @@ ORDER BY r.created_at;
 -- -----------------------------------------------------------------------------
 CREATE OR REPLACE VIEW eduflow.v_teacher_assignment_history AS
 SELECT
-    ta.roadmap_id,
-    ta.teacher_id,
+    ta.roadmap_id                                   AS roadmap_id,
+    ta.teacher_id                                   AS teacher_id,
     t.name                                          AS teacher_name,
-    ta.action,
-    ta.ts,
-    r.group_id,
-    r.template_id
+    ta.action                                       AS action,
+    ta.ts                                           AS ts,
+    r.group_id                                      AS group_id,
+    r.template_id                                   AS template_id
 FROM eduflow.teacher_assignment AS ta
 LEFT JOIN eduflow.teachers AS t
     ON t.teacher_id = ta.teacher_id

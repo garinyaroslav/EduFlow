@@ -1,8 +1,5 @@
 # EduFlow Analytics
 
-Конвейер аналитики: события → ClickHouse → обработка (Spark) → Grafana.
-# EduFlow Analytics
-
 Конвейер аналитики: события → ClickHouse → SQL-метрики → (Spark) → Grafana.
 
 ## Структура
@@ -38,9 +35,12 @@ cd generator
 python generate.py --preset small --seed 42
 python load.py
 
-# 3. Применить слой метрик
+# 3. Применить слой метрик.
+# HTTP не принимает несколько операторов в одном теле (ClickHouse 26).
 for f in ../clickhouse/metrics/0*.sql; do
-  curl -s "http://localhost:8123/?user=eduflow&password=eduflow" --data-binary @"$f"
+  echo "=== $f ==="
+  docker exec -i eduflow-clickhouse clickhouse-client \
+    --user eduflow --password eduflow --multiquery < "$f"
 done
 
 # 4. Grafana: http://localhost:3000  (admin / admin)
@@ -49,5 +49,3 @@ done
 ## Метрики (слой 1 — SQL)
 
 Подробности и соответствие метрикам курсовой — в `clickhouse/metrics/README.md`.
-
-
