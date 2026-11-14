@@ -1,2 +1,4 @@
 analytics/generator/.venv
 analytics/generator/out
+
+**/__pycache__/
