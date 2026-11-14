@@ -7,8 +7,8 @@ services:
       CLICKHOUSE_PASSWORD: eduflow
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     ports:
-      - "8123:8123" # HTTP
-      - "9000:9000" # native
+      - "8123:8123"
+      - "9000:9000"
     volumes:
       - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
       - clickhouse-data:/var/lib/clickhouse
@@ -36,11 +36,8 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana-data:/var/lib/grafana
 
-  # Одноразовый / по требованию Spark-воркер.
-  # Запуск джобы:
-  #   docker compose run --rm spark /opt/eduflow/run.sh
   spark:
-    image: apache/spark:latest
+    image: apache/spark:3.5.3
     container_name: eduflow-spark
     depends_on:
       clickhouse:
@@ -51,14 +48,15 @@ services:
       CLICKHOUSE_USER: eduflow
       CLICKHOUSE_PASSWORD: eduflow
       CLICKHOUSE_DB: eduflow
+      CLICKHOUSE_JDBC_JAR: /opt/eduflow/jars/clickhouse-jdbc-0.6.0-all.jar
       RISK_INACTIVE_DAYS: "21"
+      PATH: /opt/spark/bin:/usr/bin:/bin
     volumes:
-      - ./processing:/opt/eduflow:ro
-      - ./processing/jars:/opt/spark/jars-extra:ro
+      - ./processing:/opt/eduflow
     working_dir: /opt/eduflow
+    user: root
     entrypoint: ["/bin/bash", "-c"]
     command: ["sleep infinity"]
-    user: root
 
 volumes:
   clickhouse-data:

@@ -1,51 +1,31 @@
 # EduFlow Analytics
 
-Конвейер аналитики: события → ClickHouse → SQL-метрики → (Spark) → Grafana.
-
-## Структура
-
 ```
-analytics/
-├── clickhouse/
-│   ├── init/01_schema.sql          # event-контракт (пишет генератор и будущее приложение)
-│   └── metrics/                    # SQL-слой метрик (VIEW)
-│       ├── 01_progress.sql
-│       ├── 02_grades.sql
-│       ├── 03_ai_quality.sql
-│       ├── 04_load.sql
-│       └── README.md
-├── generator/
-│   ├── generate.py                 # синтетические данные
-│   ├── load.py                     # загрузка CSV → ClickHouse
-│   └── verify.py                   # проверка закономерностей
-├── grafana/
-│   └── provisioning/
-│       └── datasources/clickhouse.yml
-└── docker-compose.yml
+generator/     → синтетика → ClickHouse
+processing/    → PySpark → metric_* (Spark в Docker, JDBC в jars/)
+clickhouse/    → schema + SQL views + metric tables (init при первом up)
+grafana/       → datasource
 ```
 
-## Быстрый старт
+## Старт
 
 ```bash
-# 1. Поднять ClickHouse + Grafana
+docker compose down -v   # чистый volume, init применит 01–06
 docker compose up -d
 
-# 2. Сгенерировать данные (small ≈ 5M строк)
 cd generator
 python generate.py --preset small --seed 42
 python load.py
+cd ..
 
-# 3. Применить слой метрик.
-# HTTP не принимает несколько операторов в одном теле (ClickHouse 26).
-for f in ../clickhouse/metrics/0*.sql; do
-  echo "=== $f ==="
-  docker exec -i eduflow-clickhouse clickhouse-client \
-    --user eduflow --password eduflow --multiquery < "$f"
-done
-
-# 4. Grafana: http://localhost:3000  (admin / admin)
+# обработка (JDBC уже в processing/jars/)
+chmod +x processing/run.sh
+docker compose run --rm spark bash /opt/eduflow/run.sh
 ```
 
-## Метрики (слой 1 — SQL)
+Grafana: http://localhost:3000 (admin / admin)
 
-Подробности и соответствие метрикам курсовой — в `clickhouse/metrics/README.md`.
+## JDBC без скачивания
+
+Файл `processing/jars/clickhouse-jdbc-0.6.0-all.jar` лежит в проекте и монтируется в контейнер.  
+`run.sh` только проверяет, что файл есть — сеть для драйвера не нужна.

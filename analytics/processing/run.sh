@@ -1,36 +1,64 @@
 #!/usr/bin/env bash
-# Запуск Spark-джобы EduFlow внутри контейнера apache/spark.
-# Использование:
-#   docker compose run --rm spark /opt/eduflow/run.sh
+# Запуск PySpark-джобы EduFlow (в контейнере Spark или локально).
 set -euo pipefail
 
-JARS_DIR="/opt/spark/jars-extra"
-DRIVER_JAR="${JARS_DIR}/clickhouse-jdbc-0.6.0-all.jar"
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+JARS_DIR="${ROOT}/jars"
+JAR_NAME="clickhouse-jdbc-0.6.0-all.jar"
+JAR="${CLICKHOUSE_JDBC_JAR:-$JARS_DIR/$JAR_NAME}"
 DRIVER_URL="https://repo1.maven.org/maven2/com/clickhouse/clickhouse-jdbc/0.6.0/clickhouse-jdbc-0.6.0-all.jar"
 
-mkdir -p "${JARS_DIR}"
+mkdir -p "$JARS_DIR"
 
-if [[ ! -f "${DRIVER_JAR}" ]]; then
-    echo "[run] downloading ClickHouse JDBC driver …"
-    # jars volume может быть read-only с хоста — тогда качаем во временную
-    if touch "${JARS_DIR}/.write_test" 2>/dev/null; then
-        rm -f "${JARS_DIR}/.write_test"
-        curl -fsSL -o "${DRIVER_JAR}" "${DRIVER_URL}"
-    else
-        DRIVER_JAR="/tmp/clickhouse-jdbc-0.6.0-all.jar"
-        curl -fsSL -o "${DRIVER_JAR}" "${DRIVER_URL}"
-    fi
-    echo "[run] driver ready: ${DRIVER_JAR}"
+if [[ ! -f "$JAR" ]]; then
+  echo "[run] JDBC not found at $JAR — downloading…"
+  TMP="$(mktemp)"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fL --retry 5 --retry-delay 2 -o "$TMP" "$DRIVER_URL"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -O "$TMP" "$DRIVER_URL"
+  else
+    echo "ERROR: need curl or wget to download JDBC"
+    exit 1
+  fi
+  # если JAR указывает в jars/ — кладём туда; иначе только по CLICKHOUSE_JDBC_JAR
+  DEST="$JAR"
+  mkdir -p "$(dirname "$DEST")"
+  mv "$TMP" "$DEST"
+  echo "[run] saved $DEST ($(wc -c < "$DEST") bytes)"
+else
+  echo "[run] using existing JDBC: $JAR"
 fi
 
-echo "[run] starting compute_metrics.py …"
-spark-submit \
-    --master "local[*]" \
-    --driver-memory 2g \
-    --executor-memory 2g \
-    --jars "${DRIVER_JAR}" \
-    --driver-class-path "${DRIVER_JAR}" \
-    --conf "spark.executor.extraClassPath=${DRIVER_JAR}" \
-    /opt/eduflow/jobs/compute_metrics.py
+export PYTHONPATH="${ROOT}${PYTHONPATH:+:$PYTHONPATH}"
+export CLICKHOUSE_HOST="${CLICKHOUSE_HOST:-clickhouse}"
+export CLICKHOUSE_HTTP_PORT="${CLICKHOUSE_HTTP_PORT:-8123}"
+export CLICKHOUSE_USER="${CLICKHOUSE_USER:-eduflow}"
+export CLICKHOUSE_PASSWORD="${CLICKHOUSE_PASSWORD:-eduflow}"
+export CLICKHOUSE_DB="${CLICKHOUSE_DB:-eduflow}"
+export CLICKHOUSE_JDBC_JAR="$JAR"
+
+# spark-submit: apache/spark → /opt/spark/bin; bitnami → в PATH
+if command -v spark-submit >/dev/null 2>&1; then
+  SUBMIT=spark-submit
+elif [[ -x /opt/spark/bin/spark-submit ]]; then
+  SUBMIT=/opt/spark/bin/spark-submit
+elif [[ -n "${SPARK_HOME:-}" && -x "${SPARK_HOME}/bin/spark-submit" ]]; then
+  SUBMIT="${SPARK_HOME}/bin/spark-submit"
+else
+  echo "ERROR: spark-submit not found"
+  exit 1
+fi
+
+echo "[run] host=$CLICKHOUSE_HOST submit=$SUBMIT"
+
+"$SUBMIT" \
+  --master "local[*]" \
+  --driver-memory "${SPARK_DRIVER_MEMORY:-2g}" \
+  --jars "$JAR" \
+  --driver-class-path "$JAR" \
+  --conf "spark.executor.extraClassPath=$JAR" \
+  --conf "spark.driver.extraJavaOptions=-Duser.timezone=UTC" \
+  "${ROOT}/eduflow_metrics/main.py"
 
 echo "[run] finished"
