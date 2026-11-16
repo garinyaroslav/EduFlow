@@ -1,50 +1,23 @@
-# EduFlow Processing
+# EduFlow Processing (PySpark)
 
-PySpark-проект: читает события из ClickHouse, считает метрики, пишет в `metric_*`.
+Вся логика метрик считается в Spark и пишется в таблицы `eduflow.metric_*`.
+SQL views для метрик **не используются**.
 
-## Структура
-
-```
-processing/
-├── jars/
-│   └── clickhouse-jdbc-0.6.0-all.jar   # драйвер в репозитории — качать не нужно
-├── eduflow_metrics/
-│   ├── config.py                      # env → Settings
-│   ├── spark_session.py
-│   ├── io_clickhouse.py               # read/write JDBC
-│   ├── main.py                        # точка входа
-│   └── metrics/
-│       ├── risk.py                    # группа риска
-│       ├── bottleneck.py              # бутылочные ноды
-│       └── ai_vs_teacher.py           # AI vs преподаватель
-└── run.sh
-```
-
-## Запуск в Docker (рекомендуется)
-
-Из корня `analytics/`:
+## Запуск
 
 ```bash
-docker compose up -d clickhouse
-docker compose run --rm spark bash /opt/eduflow/run.sh
+docker compose run --rm spark "/opt/eduflow/run.sh"
 ```
 
-Драйвер уже в `jars/`, сеть Docker резолвит хост `clickhouse`.
+## Модули
 
-## Запуск локально (опционально)
+| Модуль | Таблицы |
+|--------|---------|
+| `metrics/progress.py` | level_distribution, completion_by_week, avg_time_to_result, risk_by_group |
+| `metrics/risk.py` | risk_scores |
+| `metrics/bottleneck.py` | bottleneck_ranking |
+| `metrics/grades.py` | grades_by_method, avg_grade_by_* , grades_by_method_template |
+| `metrics/ai_quality.py` | ai_vs_teacher, ai_correction_* |
+| `metrics/load_metrics.py` | teacher_load, roadmaps_without_teacher |
 
-```bash
-# Java 17+, pip install pyspark
-export CLICKHOUSE_HOST=localhost
-export CLICKHOUSE_JDBC_JAR="$PWD/jars/clickhouse-jdbc-0.6.0-all.jar"
-export PYTHONPATH="$PWD"
-./run.sh
-```
-
-## Результат
-
-| Таблица | Содержимое |
-|---------|------------|
-| `metric_risk_scores` | risk_score, bucket по студентам |
-| `metric_bottleneck_ranking` | rank нод |
-| `metric_ai_vs_teacher` | correction_rate; `teacher_id=0` = ALL |
+Схема таблиц: `clickhouse/init/02_metric_tables.sql`.

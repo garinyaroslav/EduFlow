@@ -32,7 +32,7 @@
                     "editorType": "sql",
                     "queryType": "sql",
                     "format": 1,
-                    "rawSql": "SELECT level, sum(students_cnt) AS students\nFROM eduflow.v_level_distribution\nGROUP BY level\nORDER BY level"
+                    "rawSql": "SELECT level, sum(students_cnt) AS students\nFROM eduflow.metric_level_distribution\nGROUP BY level\nORDER BY level"
                 }
             ],
             "options": {
@@ -63,7 +63,7 @@
                     "editorType": "sql",
                     "queryType": "sql",
                     "format": 1,
-                    "rawSql": "SELECT group_name, week_start, nodes_appeared, nodes_completed,\n  round(nodes_completed / nullIf(nodes_appeared, 0), 3) AS completion_rate\nFROM eduflow.v_completion_by_week\nORDER BY week_start DESC, nodes_appeared DESC\nLIMIT 50"
+                    "rawSql": "SELECT group_name, week_start, nodes_appeared, nodes_completed,\n  round(nodes_completed / nullIf(nodes_appeared, 0), 3) AS completion_rate\nFROM eduflow.metric_completion_by_week\nORDER BY week_start DESC, nodes_appeared DESC\nLIMIT 50"
                 }
             ]
         },
@@ -91,7 +91,7 @@
                     "editorType": "sql",
                     "queryType": "sql",
                     "format": 1,
-                    "rawSql": "SELECT check_method, count() AS samples,\n  round(avg(avg_days), 2) AS avg_days,\n  round(avg(median_days), 2) AS median_days\nFROM eduflow.v_avg_time_to_result\nGROUP BY check_method\nORDER BY check_method"
+                    "rawSql": "SELECT check_method, count() AS samples,\n  round(avg(avg_days), 2) AS avg_days,\n  round(avg(median_days), 2) AS median_days\nFROM eduflow.metric_avg_time_to_result\nGROUP BY check_method\nORDER BY check_method"
                 }
             ]
         },
@@ -119,7 +119,7 @@
                     "editorType": "sql",
                     "queryType": "sql",
                     "format": 1,
-                    "rawSql": "SELECT node_title, check_method, bottleneck_score, median_days, low_level_rate, timed_samples\nFROM eduflow.v_bottleneck_nodes\nORDER BY bottleneck_score DESC\nLIMIT 20"
+                    "rawSql": "SELECT node_title, check_method, bottleneck_score, median_days, low_level_rate, timed_samples\nFROM eduflow.metric_bottleneck_ranking\nORDER BY bottleneck_score DESC\nLIMIT 20"
                 }
             ]
         },
@@ -147,7 +147,7 @@
                     "editorType": "sql",
                     "queryType": "sql",
                     "format": 1,
-                    "rawSql": "SELECT group_name, risk_students, total_students, risk_share\nFROM eduflow.v_risk_by_group\nORDER BY risk_share DESC\nLIMIT 30"
+                    "rawSql": "SELECT group_name, risk_students, total_students, risk_share\nFROM eduflow.metric_risk_by_group\nORDER BY risk_share DESC\nLIMIT 30"
                 }
             ]
         },

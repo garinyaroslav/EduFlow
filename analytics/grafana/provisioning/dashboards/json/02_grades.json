@@ -19,7 +19,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT method, grades_cnt, avg_grade, median_grade\nFROM eduflow.v_grades_by_method\nORDER BY method"
+          "rawSql": "SELECT method, grades_cnt, avg_grade, median_grade\nFROM eduflow.metric_grades_by_method\nORDER BY method"
         }
       ]
     },
@@ -36,7 +36,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT method, avg_grade\nFROM eduflow.v_grades_by_method\nORDER BY method"
+          "rawSql": "SELECT method, avg_grade\nFROM eduflow.metric_grades_by_method\nORDER BY method"
         }
       ],
       "fieldConfig": {
@@ -61,7 +61,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT node_title, check_method, template_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_node\nORDER BY avg_grade ASC\nLIMIT 25"
+          "rawSql": "SELECT node_title, check_method, template_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_node\nORDER BY avg_grade ASC\nLIMIT 25"
         }
       ]
     },
@@ -78,7 +78,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT template_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_template\nORDER BY avg_grade"
+          "rawSql": "SELECT template_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_template\nORDER BY avg_grade"
         }
       ]
     },
@@ -95,7 +95,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT group_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_group\nORDER BY avg_grade\nLIMIT 30"
+          "rawSql": "SELECT group_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_group\nORDER BY avg_grade\nLIMIT 30"
         }
       ]
     },
@@ -112,7 +112,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT teacher_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_teacher\nWHERE teacher_name != ''\nORDER BY avg_grade"
+          "rawSql": "SELECT teacher_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_teacher\nWHERE teacher_name != ''\nORDER BY avg_grade"
         }
       ]
     },
@@ -129,7 +129,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT template_name, method, grades_cnt, avg_grade, median_grade\nFROM eduflow.v_grades_by_method_template\nORDER BY template_name, method"
+          "rawSql": "SELECT template_name, method, grades_cnt, avg_grade, median_grade\nFROM eduflow.metric_grades_by_method_template\nORDER BY template_name, method"
         }
       ]
     }

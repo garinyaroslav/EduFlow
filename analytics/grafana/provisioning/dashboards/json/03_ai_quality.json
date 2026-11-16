@@ -19,7 +19,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT * FROM eduflow.v_ai_correction_summary"
+          "rawSql": "SELECT * FROM eduflow.metric_ai_correction_summary"
         }
       ]
     },
@@ -36,7 +36,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT method, ai_grades, corrected_cnt, correction_rate, avg_abs_delta\nFROM eduflow.v_ai_correction_by_method\nORDER BY method"
+          "rawSql": "SELECT method, ai_grades, corrected_cnt, correction_rate, avg_abs_delta\nFROM eduflow.metric_ai_correction_by_method\nORDER BY method"
         }
       ]
     },
@@ -70,7 +70,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT teacher_name, correction_rate, avg_abs_delta, corrected_cnt, ai_grades\nFROM eduflow.v_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 40"
+          "rawSql": "SELECT teacher_name, correction_rate, avg_abs_delta, corrected_cnt, ai_grades\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 40"
         }
       ]
     },
@@ -104,7 +104,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT * FROM eduflow.v_ai_delta_distribution ORDER BY 1 LIMIT 50"
+          "rawSql": "SELECT * FROM eduflow.metric_ai_vs_teacher ORDER BY 1 LIMIT 50"
         }
       ]
     }

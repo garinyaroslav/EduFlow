@@ -19,7 +19,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT teacher_name, roadmaps_cnt, groups_cnt\nFROM eduflow.v_teacher_load\nORDER BY roadmaps_cnt DESC\nLIMIT 50"
+          "rawSql": "SELECT teacher_name, roadmaps_cnt, groups_cnt\nFROM eduflow.metric_teacher_load\nORDER BY roadmaps_cnt DESC\nLIMIT 50"
         }
       ]
     },
@@ -36,7 +36,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT count() AS cnt FROM eduflow.v_roadmaps_without_teacher"
+          "rawSql": "SELECT count() AS cnt FROM eduflow.metric_roadmaps_without_teacher"
         }
       ],
       "options": {
@@ -97,7 +97,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT roadmap_id, group_name, template_name, created_at\nFROM eduflow.v_roadmaps_without_teacher\nORDER BY created_at DESC\nLIMIT 50"
+          "rawSql": "SELECT roadmap_id, group_name, template_name, created_at\nFROM eduflow.metric_roadmaps_without_teacher\nORDER BY created_at DESC\nLIMIT 50"
         }
       ]
     },
@@ -114,7 +114,7 @@
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT teacher_name, action, ts, roadmap_id, group_id\nFROM eduflow.v_teacher_assignment_history\nORDER BY ts DESC\nLIMIT 50"
+          "rawSql": "SELECT teacher_name, action, ts, roadmap_id, group_id\nFROM eduflow.teacher_assignment\nORDER BY ts DESC\nLIMIT 50"
         }
       ]
     }
