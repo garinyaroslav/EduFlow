@@ -7,7 +7,7 @@
 Заложенные закономерности:
   * у студента скрытая «способность», у ноды «сложность»; у каждого шаблона
     несколько нод-«бутылочных горлышек» (выше сложность -> ниже оценки, дольше путь);
-  * методы проверки смещают оценку: test занижает, review завышает относительно moodle;
+  * итоговая оценка только 1/2/3; методы смещают её: test занижает, review завышает относительно moodle;
   * ответственные преподаватели правят оценки AI с разной склонностью (чаще,
     когда AI сильно ошибается);
   * часть студентов «отваливается» (чаще слабые), после этого активности нет;
@@ -40,9 +40,9 @@ DAY = 86_400
 WEEK = 7 * DAY
 METHODS = ["moodle", "test", "review"]
 METHOD_P = [0.40, 0.35, 0.25]
-# смещение оценки относительно «истинного» уровня и разброс шума по методам
-METHOD_BIAS = {"moodle": 0.0, "test": -4.0, "review": 6.0}
-METHOD_NOISE = {"moodle": 8.0, "test": 10.0, "review": 7.0}
+# смещение итоговой оценки 1–3 относительно «истинного» уровня (в баллах шкалы 1–3)
+METHOD_BIAS = {"moodle": 0.0, "test": -0.35, "review": 0.40}
+METHOD_NOISE = {"moodle": 0.45, "test": 0.55, "review": 0.40}
 # сдвиг лог-времени до первого результата
 METHOD_DELAY = {"moodle": 0.0, "test": -0.2, "review": 0.3}
 
@@ -89,7 +89,8 @@ class Ctx:
 
 
 def level_of(grade: np.ndarray) -> np.ndarray:
-    return np.where(grade < 60, 1, np.where(grade < 80, 2, 3)).astype(np.int8)
+    """Итоговая оценка и уровень освоения совпадают: {1, 2, 3}."""
+    return np.clip(grade, 1, 3).astype(np.int8)
 
 
 def make_templates(rng, n_templates: int, n_nodes: int):
@@ -149,7 +150,8 @@ def simulate_group(rng, ctx: Ctx, gid: int, student_ids: np.ndarray, tpl: dict,
     bias = np.array([METHOD_BIAS[x] for x in methods])
     noise = np.array([METHOD_NOISE[x] for x in methods])
     mdelay = np.array([METHOD_DELAY[x] for x in methods])
-    true_base = 70 + 12 * (ability[:, None] - diff[None, :])  # без смещения метода
+    # «Истинный» уровень на шкале 1–3 (без смещения метода)
+    true_base = 2.0 + 0.55 * (ability[:, None] - diff[None, :])
 
     mu = np.log(3.5) + 0.40 * (diff[None, :] - ability[:, None]) + mdelay[None, :]
     delay = np.clip(np.exp(mu + 0.5 * rng.standard_normal((n, m))), 0.05, 40) * DAY
@@ -162,8 +164,10 @@ def simulate_group(rng, ctx: Ctx, gid: int, student_ids: np.ndarray, tpl: dict,
     last_ts = np.zeros((n, m), dtype=np.int64)
     last_att = np.zeros((n, m), dtype=np.int8)
     for k in range(3):
-        true_k = true_base + 6 * k
-        grade = np.clip(np.rint(true_k + bias[None, :] + noise[None, :] * rng.standard_normal((n, m))), 0, 100)
+        # повторные попытки слегка поднимают ожидаемый уровень
+        true_k = true_base + 0.25 * k
+        raw = true_k + bias[None, :] + noise[None, :] * rng.standard_normal((n, m))
+        grade = np.clip(np.rint(raw), 1, 3).astype(np.int16)
         event_ts = cur_ts.copy()
         # moodle-оценка приходит с задержкой синхронизации
         lag = (rng.exponential(6 * 3600, (n, m))).astype(np.int64)
@@ -177,7 +181,8 @@ def simulate_group(rng, ctx: Ctx, gid: int, student_ids: np.ndarray, tpl: dict,
             last_grade[si, ii] = grade[si, ii]
             last_ts[si, ii] = event_ts[si, ii]
             last_att[si, ii] = k + 1
-        retry = ok & is_ai[None, :] & (grade < 60) & (rng.random((n, m)) < 0.75)
+        # пересдача AI, если оценка низкая (1)
+        retry = ok & is_ai[None, :] & (grade <= 1) & (rng.random((n, m)) < 0.75)
         cur_ts = cur_ts + (rng.uniform(1, 7, (n, m)) * DAY).astype(np.int64)
         cur_valid = retry & (cur_ts < churn_ts[:, None]) & (cur_ts < t_end)
 
@@ -194,7 +199,7 @@ def simulate_group(rng, ctx: Ctx, gid: int, student_ids: np.ndarray, tpl: dict,
     corr_rows = []
     if len(si):
         g_old = last_grade[si, ii].astype(int)
-        ref = true_base[si, ii] + 6 * (last_att[si, ii] - 1)
+        ref = true_base[si, ii] + 0.25 * (last_att[si, ii] - 1)
         err = np.abs(g_old - ref)
         t_ts = last_ts[si, ii]
         corr_ts = t_ts + (rng.uniform(0.3, 6, len(si)) * DAY).astype(np.int64)
@@ -211,9 +216,10 @@ def simulate_group(rng, ctx: Ctx, gid: int, student_ids: np.ndarray, tpl: dict,
             else:
                 teacher = np.where(after, teacher_after, teacher)
         prop = np.array([teacher_prop[int(x)] for x in teacher])
-        p = np.minimum(prop * (0.25 + np.minimum(err / 15, 1)), 0.95)
+        # чаще правят, когда AI «ошибся» относительно истинного уровня
+        p = np.minimum(prop * (0.25 + np.minimum(err / 1.5, 1)), 0.95)
         do = (rng.random(len(si)) < p) & keep & (corr_ts < t_end)
-        new = np.clip(np.rint(ref + rng.normal(0, 3, len(si))), 0, 100).astype(int)
+        new = np.clip(np.rint(ref + rng.normal(0, 0.35, len(si))), 1, 3).astype(int)
         do &= new != g_old
         corr_rows = np.nonzero(do)[0]
         c = pd.DataFrame({
@@ -391,7 +397,7 @@ def main() -> None:
         "churned_students": totals["churned"],
         "roadmaps_without_teacher_at_end": n_unassigned,
         "node_methods": {str(k): v for k, v in method_of.items()},
-        "level_rule": "grade<60 -> 1, 60..79 -> 2, >=80 -> 3",
+        "level_rule": "grade == level ∈ {1,2,3}; grade is the final mastery score",
     })
     (out / "ground_truth.json").write_text(json.dumps(truth, ensure_ascii=False, indent=1))
 

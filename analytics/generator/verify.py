@@ -52,7 +52,7 @@ bott = {n for k, v in truth.items() if k.startswith("template_") for n in v["bot
 ga["is_bott"] = ga["node_id"].isin(bott)
 mb = ga[ga.attempt == 1].groupby("is_bott")["grade"].mean().round(1)
 print("Средняя оценка: бутылочные горлышки vs остальные:", mb.to_dict())
-check("на бутылочных нодах оценки ниже", mb[True] < mb[False] - 5)
+check("на бутылочных нодах оценки ниже", mb[True] < mb[False] - 0.15)
 
 d = first.assign(days=(first["ts_g"] - first["ts_a"]).dt.total_seconds() / DAY if (DAY := 86400) else 0)
 d["is_bott"] = d["node_id"].isin(bott)

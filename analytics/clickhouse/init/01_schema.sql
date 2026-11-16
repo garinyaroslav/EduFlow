@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS eduflow.grade_assigned
     method     Enum8('moodle' = 1, 'test' = 2, 'review' = 3),
     source     Enum8('moodle' = 1, 'ai' = 2),
     attempt    UInt8,
-    grade      UInt8,
+    grade      UInt8,   -- итоговая оценка освоения: 1 | 2 | 3
     ts         DateTime('UTC')
 ) ENGINE = MergeTree
 PARTITION BY toYYYYMM(ts)
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS eduflow.grade_corrected
     student_id UInt32,
     node_id    UInt32,
     teacher_id UInt32,
-    old_grade  UInt8,
-    new_grade  UInt8,
+    old_grade  UInt8,  -- 1..3
+    new_grade  UInt8,  -- 1..3
     ts         DateTime('UTC')
 ) ENGINE = MergeTree
 PARTITION BY toYYYYMM(ts)
@@ -116,8 +116,8 @@ CREATE TABLE IF NOT EXISTS eduflow.level_changed
     roadmap_id UInt32,
     student_id UInt32,
     node_id    UInt32,
-    old_level  UInt8,
-    new_level  UInt8,
+    old_level  UInt8,  -- совпадает с grade: 1..3
+    new_level  UInt8,  -- совпадает с grade: 1..3
     reason     Enum8('grade' = 1, 'correction' = 2),
     ts         DateTime('UTC')
 ) ENGINE = MergeTree
