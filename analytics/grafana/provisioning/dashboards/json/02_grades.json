@@ -1,0 +1,144 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Средняя оценка по методу проверки",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT method, grades_cnt, avg_grade, median_grade\nFROM eduflow.v_grades_by_method\nORDER BY method"
+        }
+      ]
+    },
+    {
+      "title": "Средняя оценка по методу (barchart)",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT method, avg_grade\nFROM eduflow.v_grades_by_method\nORDER BY method"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "none" },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "xTickLabelRotation": 0
+      }
+    },
+    {
+      "title": "Средняя оценка по нодам (худшие 25)",
+      "type": "table",
+      "gridPos": { "h": 12, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT node_title, check_method, template_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_node\nORDER BY avg_grade ASC\nLIMIT 25"
+        }
+      ]
+    },
+    {
+      "title": "Средняя оценка по шаблонам",
+      "type": "table",
+      "gridPos": { "h": 12, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT template_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_template\nORDER BY avg_grade"
+        }
+      ]
+    },
+    {
+      "title": "Средняя оценка по группам (топ/низ)",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 20 },
+      "id": 5,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT group_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_group\nORDER BY avg_grade\nLIMIT 30"
+        }
+      ]
+    },
+    {
+      "title": "Средняя оценка по преподавателям",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 20 },
+      "id": 6,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT teacher_name, grades_cnt, avg_grade\nFROM eduflow.v_avg_grade_by_teacher\nWHERE teacher_name != ''\nORDER BY avg_grade"
+        }
+      ]
+    },
+    {
+      "title": "Методы внутри шаблона",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 30 },
+      "id": 7,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT template_name, method, grades_cnt, avg_grade, median_grade\nFROM eduflow.v_grades_by_method_template\nORDER BY template_name, method"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["eduflow", "grades"],
+  "templating": { "list": [] },
+  "time": { "from": "now-90d", "to": "now" },
+  "title": "EduFlow — Оценки",
+  "uid": "eduflow-grades",
+  "version": 1
+}

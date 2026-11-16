@@ -1,0 +1,119 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Сводка корректировок AI (SQL)",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT * FROM eduflow.v_ai_correction_summary"
+        }
+      ]
+    },
+    {
+      "title": "Доля корректировок по методу (SQL)",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 2,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT method, ai_grades, corrected_cnt, correction_rate, avg_abs_delta\nFROM eduflow.v_ai_correction_by_method\nORDER BY method"
+        }
+      ]
+    },
+    {
+      "title": "AI vs Teacher (Spark) — ALL",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 3,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT method, ai_grades, corrected_cnt, correction_rate, avg_delta, avg_abs_delta, median_abs_delta\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id = 0\nORDER BY method"
+        }
+      ]
+    },
+    {
+      "title": "Корректировки по преподавателям (SQL)",
+      "type": "table",
+      "gridPos": { "h": 12, "w": 12, "x": 0, "y": 14 },
+      "id": 4,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT teacher_name, correction_rate, avg_abs_delta, corrected_cnt, ai_grades\nFROM eduflow.v_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 40"
+        }
+      ]
+    },
+    {
+      "title": "AI vs Teacher (Spark) — по преподавателям",
+      "type": "table",
+      "gridPos": { "h": 12, "w": 12, "x": 12, "y": 14 },
+      "id": 5,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT teacher_name, method, ai_grades, correction_rate, avg_abs_delta, median_abs_delta\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id > 0 AND method = 'ALL'\nORDER BY correction_rate DESC\nLIMIT 40"
+        }
+      ]
+    },
+    {
+      "title": "Распределение величины правок AI (SQL)",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 26 },
+      "id": 6,
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT * FROM eduflow.v_ai_delta_distribution ORDER BY 1 LIMIT 50"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["eduflow", "ai"],
+  "templating": { "list": [] },
+  "time": { "from": "now-90d", "to": "now" },
+  "title": "EduFlow — Качество AI",
+  "uid": "eduflow-ai",
+  "version": 1
+}

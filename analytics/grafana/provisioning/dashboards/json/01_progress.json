@@ -1,0 +1,233 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "id": null,
+    "links": [],
+    "panels": [
+        {
+            "title": "Распределение уровней освоения (level)",
+            "type": "table",
+            "gridPos": {
+                "h": 10,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "id": 1,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT level, sum(students_cnt) AS students\nFROM eduflow.v_level_distribution\nGROUP BY level\nORDER BY level"
+                }
+            ],
+            "options": {
+                "showHeader": true
+            }
+        },
+        {
+            "title": "Завершение нод по неделям (топ-групп)",
+            "type": "table",
+            "gridPos": {
+                "h": 10,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "id": 2,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT group_name, week_start, nodes_appeared, nodes_completed,\n  round(nodes_completed / nullIf(nodes_appeared, 0), 3) AS completion_rate\nFROM eduflow.v_completion_by_week\nORDER BY week_start DESC, nodes_appeared DESC\nLIMIT 50"
+                }
+            ]
+        },
+        {
+            "title": "Время до первого результата (по методам)",
+            "type": "table",
+            "gridPos": {
+                "h": 10,
+                "w": 12,
+                "x": 0,
+                "y": 10
+            },
+            "id": 3,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT check_method, count() AS samples,\n  round(avg(avg_days), 2) AS avg_days,\n  round(avg(median_days), 2) AS median_days\nFROM eduflow.v_avg_time_to_result\nGROUP BY check_method\nORDER BY check_method"
+                }
+            ]
+        },
+        {
+            "title": "Бутылочные ноды (SQL view)",
+            "type": "table",
+            "gridPos": {
+                "h": 10,
+                "w": 12,
+                "x": 12,
+                "y": 10
+            },
+            "id": 4,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT node_title, check_method, bottleneck_score, median_days, low_level_rate, timed_samples\nFROM eduflow.v_bottleneck_nodes\nORDER BY bottleneck_score DESC\nLIMIT 20"
+                }
+            ]
+        },
+        {
+            "title": "Группа риска по группам (SQL)",
+            "type": "table",
+            "gridPos": {
+                "h": 10,
+                "w": 12,
+                "x": 0,
+                "y": 20
+            },
+            "id": 5,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT group_name, risk_students, total_students, risk_share\nFROM eduflow.v_risk_by_group\nORDER BY risk_share DESC\nLIMIT 30"
+                }
+            ]
+        },
+        {
+            "title": "Риск (Spark): распределение bucket",
+            "type": "piechart",
+            "gridPos": {
+                "h": 10,
+                "w": 12,
+                "x": 12,
+                "y": 20
+            },
+            "id": 6,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT risk_bucket, count() AS cnt\nFROM eduflow.metric_risk_scores\nGROUP BY risk_bucket\nORDER BY risk_bucket"
+                }
+            ],
+            "options": {
+                "legend": {
+                    "displayMode": "list",
+                    "placement": "right"
+                },
+                "pieType": "pie"
+            }
+        },
+        {
+            "title": "Риск (Spark): топ high-risk студентов",
+            "type": "table",
+            "gridPos": {
+                "h": 10,
+                "w": 24,
+                "x": 0,
+                "y": 30
+            },
+            "id": 7,
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "eduflow-clickhouse"
+            },
+            "targets": [
+                {
+                    "refId": "A",
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "eduflow-clickhouse"
+                    },
+                    "editorType": "sql",
+                    "queryType": "sql",
+                    "format": 1,
+                    "rawSql": "SELECT student_name, group_name, risk_score, risk_bucket,\n  days_inactive, login_count_30d, skip_rate, login_trend\nFROM eduflow.metric_risk_scores\nORDER BY risk_score DESC\nLIMIT 50"
+                }
+            ]
+        }
+    ],
+    "schemaVersion": 39,
+    "tags": [
+        "eduflow",
+        "progress"
+    ],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-90d",
+        "to": "now"
+    },
+    "title": "EduFlow — Прогресс и риск",
+    "uid": "eduflow-progress",
+    "version": 1
+}
