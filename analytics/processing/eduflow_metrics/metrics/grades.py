@@ -21,15 +21,24 @@ def compute_grade_metrics(
 ) -> dict[str, DataFrame]:
     final = compute_final_grades(spark, settings)
     nodes = read_table(spark, settings, "template_nodes")
-    templates = read_table(spark, settings, "templates").withColumnRenamed("name", "template_name")
-    groups = read_table(spark, settings, "groups").withColumnRenamed("name", "group_name")
-    teachers = read_table(spark, settings, "teachers").withColumnRenamed("name", "teacher_name")
+    templates = read_table(spark, settings, "templates").withColumnRenamed(
+        "name", "template_name"
+    )
+    groups = read_table(spark, settings, "groups").withColumnRenamed(
+        "name", "group_name"
+    )
+    teachers = read_table(spark, settings, "teachers").withColumnRenamed(
+        "name", "teacher_name"
+    )
 
     with_meta = (
         final.join(
-            nodes.select("node_id", "title", "check_method", "template_id").withColumnRenamed(
-                "title", "node_title"
-            ),
+            nodes.select(
+                "node_id",
+                "title",
+                "check_method",
+                F.col("template_id").alias("node_template_id"),
+            ).withColumnRenamed("title", "node_title"),
             "node_id",
             "left",
         )
@@ -55,7 +64,7 @@ def compute_grade_metrics(
 
     by_node = (
         with_meta.groupBy(
-            "node_id", "node_title", "check_method", "template_id", "template_name"
+            "node_id", "node_title", "check_method", "node_template_id", "template_name"
         )
         .agg(
             F.count("*").alias("grades_cnt"),
