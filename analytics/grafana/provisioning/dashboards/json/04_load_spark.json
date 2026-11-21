@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -7,123 +9,690 @@
   "links": [],
   "panels": [
     {
-      "title": "Нагрузка преподавателей (роадмапы)",
-      "type": "table",
-      "gridPos": { "h": 12, "w": 12, "x": 0, "y": 0 },
-      "id": 1,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
-          "editorType": "sql",
-          "queryType": "sql",
-          "format": 1,
-          "rawSql": "SELECT teacher_name, roadmaps_cnt, groups_cnt\nFROM eduflow.metric_teacher_load\nORDER BY roadmaps_cnt DESC\nLIMIT 50"
-        }
-      ]
-    },
-    {
       "title": "Роадмапы без ответственного",
       "type": "stat",
-      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
-      "id": 2,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT count() AS cnt FROM eduflow.metric_roadmaps_without_teacher"
+          "rawSql": "SELECT count() AS \"Роадмапов без преп. (cnt)\"\nFROM eduflow.metric_roadmaps_without_teacher"
         }
       ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 5
+              },
+              {
+                "color": "#F2495C",
+                "value": 15
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
       }
     },
     {
-      "title": "Всего студентов (risk table)",
+      "title": "Всего студентов (risk)",
       "type": "stat",
-      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
-      "id": 3,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT count() AS cnt FROM eduflow.metric_risk_scores"
+          "rawSql": "SELECT count() AS \"Студентов (cnt)\"\nFROM eduflow.metric_risk_scores"
         }
       ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#5794F2"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "colorMode": "value",
-        "graphMode": "none"
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
       }
     },
     {
-      "title": "Bottleneck ranking (Spark)",
-      "type": "table",
-      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 12 },
-      "id": 4,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "title": "Преподавателей с нагрузкой",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT rank, node_title, check_method, template_name,\n  bottleneck_score, median_days, low_level_rate, samples\nFROM eduflow.metric_bottleneck_ranking\nORDER BY rank\nLIMIT 30"
+          "rawSql": "SELECT count() AS \"Преподавателей (cnt)\"\nFROM eduflow.metric_teacher_load\nWHERE roadmaps_cnt > 0"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#B877D9"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      }
     },
     {
-      "title": "Роадмапы без преподавателя (список)",
-      "type": "table",
-      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 24 },
-      "id": 5,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "title": "Макс. роадмапов на 1 преп.",
+      "type": "stat",
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT roadmap_id, group_name, template_name, created_at\nFROM eduflow.metric_roadmaps_without_teacher\nORDER BY created_at DESC\nLIMIT 50"
+          "rawSql": "SELECT max(roadmaps_cnt) AS \"Макс. роадмапов (max)\"\nFROM eduflow.metric_teacher_load"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 5
+              },
+              {
+                "color": "#F2495C",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "title": "Нагрузка преподавателей (роадмапы)",
+      "type": "barchart",
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 5,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  roadmaps_cnt AS \"Роадмапы (roadmaps_cnt)\",\n  groups_cnt AS \"Группы (groups_cnt)\"\nFROM eduflow.metric_teacher_load\nORDER BY roadmaps_cnt DESC\nLIMIT 25"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Количество",
+            "fillOpacity": 85,
+            "gradientMode": "hue",
+            "lineWidth": 1
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Роадмапы (roadmaps_cnt)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5794F2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Группы (groups_cnt)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#73BF69",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 22
+      }
+    },
+    {
+      "title": "Bottleneck ranking (Spark) — score",
+      "type": "barchart",
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 6,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  node_title AS \"Нода (node_title)\",\n  bottleneck_score AS \"Bottleneck score (bottleneck_score)\",\n  median_days AS \"Медиана, дней (median_days)\"\nFROM eduflow.metric_bottleneck_ranking\nORDER BY rank\nLIMIT 15"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-YlOrRd"
+          },
+          "custom": {
+            "axisLabel": "Score",
+            "fillOpacity": 90,
+            "gradientMode": "scheme"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Медиана, дней (median_days)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5794F2",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.75,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 28
+      }
+    },
+    {
+      "title": "Распределение нагрузки (гистограмма роадмапов)",
+      "type": "barchart",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 7,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  toString(roadmaps_cnt) AS \"Роадмапов на преп. (roadmaps_cnt)\",\n  count() AS \"Преподавателей (teachers)\"\nFROM eduflow.metric_teacher_load\nGROUP BY roadmaps_cnt\nORDER BY roadmaps_cnt"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Число преподавателей",
+            "fillOpacity": 85,
+            "gradientMode": "scheme"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0.15,
+        "barWidth": 0.7,
+        "legend": {
+          "displayMode": "hidden",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0
+      }
+    },
+    {
+      "title": "Low level rate на bottleneck-нодах",
+      "type": "bargauge",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 8,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  node_title AS \"Нода (node_title)\",\n  low_level_rate AS \"Доля низких уровней (low_level_rate)\"\nFROM eduflow.metric_bottleneck_ranking\nORDER BY rank\nLIMIT 12"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#FADE2A",
+                "value": 0.2
+              },
+              {
+                "color": "#FF9830",
+                "value": 0.35
+              },
+              {
+                "color": "#F2495C",
+                "value": 0.5
+              }
+            ]
+          },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 12,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      }
+    },
+    {
+      "title": "Нагрузка преподавателей (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 25
+      },
+      "id": 9,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  roadmaps_cnt AS \"Роадмапы (roadmaps_cnt)\",\n  groups_cnt AS \"Группы (groups_cnt)\"\nFROM eduflow.metric_teacher_load\nORDER BY roadmaps_cnt DESC\nLIMIT 50"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Bottleneck ranking (детально)",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      },
+      "id": 10,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  rank AS \"Ранг (rank)\",\n  node_title AS \"Нода (node_title)\",\n  check_method AS \"Способ проверки (check_method)\",\n  template_name AS \"Шаблон (template_name)\",\n  bottleneck_score AS \"Bottleneck score (bottleneck_score)\",\n  median_days AS \"Медиана, дней (median_days)\",\n  low_level_rate AS \"Доля низких уровней (low_level_rate)\",\n  samples AS \"Выборка (samples)\"\nFROM eduflow.metric_bottleneck_ranking\nORDER BY rank\nLIMIT 30"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Роадмапы без преподавателя",
+      "type": "table",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 35
+      },
+      "id": 11,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  roadmap_id AS \"ID роадмапа (roadmap_id)\",\n  group_name AS \"Группа (group_name)\",\n  template_name AS \"Шаблон (template_name)\",\n  created_at AS \"Создан (created_at)\"\nFROM eduflow.metric_roadmaps_without_teacher\nORDER BY created_at DESC\nLIMIT 50"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
     },
     {
       "title": "История назначений преподавателей",
       "type": "table",
-      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 24 },
-      "id": 6,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 35
+      },
+      "id": 12,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT teacher_name, action, ts, roadmap_id, group_id\nFROM eduflow.teacher_assignment\nORDER BY ts DESC\nLIMIT 50"
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  action AS \"Действие (action)\",\n  ts AS \"Время (ts)\",\n  roadmap_id AS \"ID роадмапа (roadmap_id)\",\n  group_id AS \"ID группы (group_id)\"\nFROM eduflow.teacher_assignment\nORDER BY ts DESC\nLIMIT 50"
         }
-      ]
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
     }
   ],
   "schemaVersion": 39,
-  "tags": ["eduflow", "load", "spark"],
-  "templating": { "list": [] },
-  "time": { "from": "now-90d", "to": "now" },
+  "tags": [
+    "eduflow",
+    "load",
+    "spark"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
   "title": "EduFlow — Нагрузка и Spark-метрики",
   "uid": "eduflow-load",
-  "version": 1
+  "version": 3
 }

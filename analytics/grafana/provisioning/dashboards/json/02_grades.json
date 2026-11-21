@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -8,137 +10,912 @@
   "panels": [
     {
       "title": "Средняя оценка по методу проверки",
-      "type": "table",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-      "id": 1,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
-          "editorType": "sql",
-          "queryType": "sql",
-          "format": 1,
-          "rawSql": "SELECT method, grades_cnt, avg_grade, median_grade\nFROM eduflow.metric_grades_by_method\nORDER BY method"
-        }
-      ]
-    },
-    {
-      "title": "Средняя оценка по методу (barchart)",
       "type": "barchart",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-      "id": 2,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT method, avg_grade\nFROM eduflow.metric_grades_by_method\nORDER BY method"
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\",\n  median_grade AS \"Медиана (median_grade)\"\nFROM eduflow.metric_grades_by_method\nORDER BY method"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "none" },
-        "overrides": []
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Оценка (1–3)",
+            "fillOpacity": 85,
+            "gradientMode": "scheme",
+            "lineWidth": 1
+          },
+          "min": 1,
+          "max": 3,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Средняя оценка (avg_grade)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5794F2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Медиана (median_grade)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#B877D9",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom" },
+        "barRadius": 0.12,
+        "barWidth": 0.65,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
         "xTickLabelRotation": 0
       }
     },
     {
-      "title": "Средняя оценка по нодам (худшие 25)",
-      "type": "table",
-      "gridPos": { "h": 12, "w": 12, "x": 0, "y": 8 },
-      "id": 3,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "title": "Доля оценок по методам",
+      "type": "piechart",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 8,
+        "y": 0
+      },
+      "id": 2,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT node_title, check_method, template_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_node\nORDER BY avg_grade ASC\nLIMIT 25"
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  grades_cnt AS \"Оценок (grades_cnt)\"\nFROM eduflow.metric_grades_by_method\nORDER BY method"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "moodle"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5794F2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "test"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FF9830",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "review"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#73BF69",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "title": "Сводка по методам",
+      "type": "stat",
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "id": 3,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\",\n  grades_cnt AS \"Оценок (grades_cnt)\"\nFROM eduflow.metric_grades_by_method\nORDER BY method"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#F2495C",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 1.8
+              },
+              {
+                "color": "#FADE2A",
+                "value": 2.2
+              },
+              {
+                "color": "#73BF69",
+                "value": 2.5
+              }
+            ]
+          },
+          "decimals": 2,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Оценок (grades_cnt)"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8AB8FF"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "title": "Худшие ноды по средней оценке (топ-15)",
+      "type": "barchart",
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 4,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  node_title AS \"Нода (node_title)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_node\nORDER BY avg_grade ASC\nLIMIT 15"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-RdYlGr"
+          },
+          "custom": {
+            "axisLabel": "Средняя оценка",
+            "fillOpacity": 90,
+            "gradientMode": "scheme",
+            "lineWidth": 0
+          },
+          "min": 1,
+          "max": 3,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.75,
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 32,
+        "xTickLabelRotation": 0
+      }
+    },
+    {
+      "title": "Лучшие ноды по средней оценке (топ-15)",
+      "type": "barchart",
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 5,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  node_title AS \"Нода (node_title)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_node\nORDER BY avg_grade DESC\nLIMIT 15"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "custom": {
+            "axisLabel": "Средняя оценка",
+            "fillOpacity": 90,
+            "gradientMode": "scheme",
+            "lineWidth": 0
+          },
+          "min": 1,
+          "max": 3,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.75,
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 32,
+        "xTickLabelRotation": 0
+      }
     },
     {
       "title": "Средняя оценка по шаблонам",
-      "type": "table",
-      "gridPos": { "h": 12, "w": 12, "x": 12, "y": 8 },
-      "id": 4,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "type": "barchart",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
+      "id": 6,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT template_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_template\nORDER BY avg_grade"
+          "rawSql": "SELECT\n  template_name AS \"Шаблон (template_name)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\",\n  grades_cnt AS \"Оценок (grades_cnt)\"\nFROM eduflow.metric_avg_grade_by_template\nORDER BY avg_grade"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Оценка",
+            "fillOpacity": 80,
+            "gradientMode": "hue",
+            "lineWidth": 1
+          },
+          "min": 1,
+          "max": 3
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Оценок (grades_cnt)"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8AB8FF",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 28
+      }
     },
     {
-      "title": "Средняя оценка по группам (топ/низ)",
-      "type": "table",
-      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 20 },
-      "id": 5,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "title": "Средняя оценка по группам",
+      "type": "barchart",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "id": 7,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT group_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_group\nORDER BY avg_grade\nLIMIT 30"
+          "rawSql": "SELECT\n  group_name AS \"Группа (group_name)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_group\nORDER BY avg_grade\nLIMIT 20"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-RdYlGr"
+          },
+          "custom": {
+            "axisLabel": "Средняя оценка",
+            "fillOpacity": 90,
+            "gradientMode": "scheme"
+          },
+          "min": 1,
+          "max": 3
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.75,
+        "legend": {
+          "displayMode": "hidden",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 24
+      }
     },
     {
       "title": "Средняя оценка по преподавателям",
-      "type": "table",
-      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 20 },
-      "id": 6,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "type": "barchart",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "id": 8,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT teacher_name, grades_cnt, avg_grade\nFROM eduflow.metric_avg_grade_by_teacher\nWHERE teacher_name != ''\nORDER BY avg_grade"
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\",\n  grades_cnt AS \"Оценок (grades_cnt)\"\nFROM eduflow.metric_avg_grade_by_teacher\nWHERE teacher_name != ''\nORDER BY avg_grade"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Оценка",
+            "fillOpacity": 85,
+            "gradientMode": "hue"
+          },
+          "min": 1,
+          "max": 3
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Оценок (grades_cnt)"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FF9830",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "barRadius": 0.1,
+        "barWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 24
+      }
     },
     {
-      "title": "Методы внутри шаблона",
-      "type": "table",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 30 },
-      "id": 7,
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+      "title": "Методы внутри шаблона (сравнение)",
+      "type": "barchart",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 9,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "eduflow-clickhouse" },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
           "editorType": "sql",
           "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT template_name, method, grades_cnt, avg_grade, median_grade\nFROM eduflow.metric_grades_by_method_template\nORDER BY template_name, method"
+          "rawSql": "SELECT\n  template_name AS \"Шаблон (template_name)\",\n  method AS \"Способ проверки (method)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_grades_by_method_template\nORDER BY template_name, method"
         }
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "Средняя оценка",
+            "fillOpacity": 80,
+            "gradientMode": "none"
+          },
+          "min": 1,
+          "max": 3
+        },
+        "overrides": []
+      },
+      "options": {
+        "barRadius": 0.08,
+        "barWidth": 0.8,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": -35,
+        "xTickLabelMaxLength": 18
+      }
+    },
+    {
+      "title": "Средняя оценка по методу (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 40
+      },
+      "id": 10,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  grades_cnt AS \"Оценок (grades_cnt)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\",\n  median_grade AS \"Медиана (median_grade)\"\nFROM eduflow.metric_grades_by_method\nORDER BY method"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Худшие 25 нод (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 16,
+        "x": 8,
+        "y": 40
+      },
+      "id": 11,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  node_title AS \"Нода (node_title)\",\n  check_method AS \"Способ проверки (check_method)\",\n  template_name AS \"Шаблон (template_name)\",\n  grades_cnt AS \"Оценок (grades_cnt)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_node\nORDER BY avg_grade ASC\nLIMIT 25"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Методы внутри шаблона (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "id": 12,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  template_name AS \"Шаблон (template_name)\",\n  method AS \"Способ проверки (method)\",\n  grades_cnt AS \"Оценок (grades_cnt)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\",\n  median_grade AS \"Медиана (median_grade)\"\nFROM eduflow.metric_grades_by_method_template\nORDER BY template_name, method"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Средняя оценка по шаблонам (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 59
+      },
+      "id": 13,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  template_name AS \"Шаблон (template_name)\",\n  grades_cnt AS \"Оценок (grades_cnt)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_template\nORDER BY avg_grade"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Средняя оценка по группам (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 59
+      },
+      "id": 14,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  group_name AS \"Группа (group_name)\",\n  grades_cnt AS \"Оценок (grades_cnt)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_group\nORDER BY avg_grade\nLIMIT 30"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
+    },
+    {
+      "title": "Средняя оценка по преподавателям (таблица)",
+      "type": "table",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 69
+      },
+      "id": 15,
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "sql",
+          "format": 1,
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  grades_cnt AS \"Оценок (grades_cnt)\",\n  avg_grade AS \"Средняя оценка (avg_grade)\"\nFROM eduflow.metric_avg_grade_by_teacher\nWHERE teacher_name != ''\nORDER BY avg_grade"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      }
     }
   ],
   "schemaVersion": 39,
-  "tags": ["eduflow", "grades"],
-  "templating": { "list": [] },
-  "time": { "from": "now-90d", "to": "now" },
+  "tags": [
+    "eduflow",
+    "grades"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
   "title": "EduFlow — Оценки",
   "uid": "eduflow-grades",
-  "version": 1
+  "version": 3
 }
