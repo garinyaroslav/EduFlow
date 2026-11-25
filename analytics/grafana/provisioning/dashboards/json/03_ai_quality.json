@@ -1,51 +1,44 @@
 {
   "annotations": {
-    "list": []
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
-  "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "title": "Доля корректировок AI (общая)",
-      "type": "gauge",
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 0,
-        "y": 0
-      },
-      "id": 1,
       "datasource": {
         "type": "grafana-clickhouse-datasource",
         "uid": "eduflow-clickhouse"
       },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "eduflow-clickhouse"
-          },
-          "editorType": "sql",
-          "queryType": "sql",
-          "format": 1,
-          "rawSql": "SELECT correction_rate AS \"Доля корректировок (correction_rate)\"\nFROM eduflow.metric_ai_correction_summary\nLIMIT 1"
-        }
-      ],
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 1,
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#73BF69",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FADE2A",
@@ -61,136 +54,84 @@
               }
             ]
           },
-          "min": 0,
-          "max": 1,
-          "unit": "percentunit",
-          "decimals": 1
-        },
-        "overrides": []
+          "unit": "percentunit"
+        }
       },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
       "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": false
+        },
+        "endpointMarker": "point",
         "minVizHeight": 75,
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
         "showThresholdLabels": false,
         "showThresholdMarkers": true,
-        "sizing": "auto"
-      }
-    },
-    {
-      "title": "Средняя |Δ| правки",
-      "type": "stat",
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 6,
-        "y": 0
+        "sizing": "auto",
+        "sparkline": false,
+        "textMode": "auto"
       },
-      "id": 2,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
-      },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_summary\nLIMIT 1"
+          "queryType": "sql",
+          "rawSql": "SELECT correction_rate AS \"Доля корректировок (correction_rate)\"\nFROM eduflow.metric_ai_correction_summary\nLIMIT 1",
+          "refId": "A"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#73BF69",
-                "value": null
-              },
-              {
-                "color": "#FADE2A",
-                "value": 0.3
-              },
-              {
-                "color": "#FF9830",
-                "value": 0.5
-              },
-              {
-                "color": "#F2495C",
-                "value": 0.8
-              }
-            ]
-          },
-          "decimals": 2,
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
-      }
+      "title": "Доля корректировок AI (общая)",
+      "type": "gauge"
     },
     {
-      "title": "AI-оценок / исправлено",
-      "type": "stat",
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 12,
-        "y": 0
-      },
-      "id": 3,
       "datasource": {
         "type": "grafana-clickhouse-datasource",
         "uid": "eduflow-clickhouse"
       },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "eduflow-clickhouse"
-          },
-          "editorType": "sql",
-          "queryType": "sql",
-          "format": 1,
-          "rawSql": "SELECT\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\"\nFROM eduflow.metric_ai_correction_summary\nLIMIT 1"
-        }
-      ],
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
-          "unit": "short",
-          "decimals": 0
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
         },
         "overrides": [
           {
@@ -225,89 +166,166 @@
           }
         ]
       },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 3,
       "options": {
         "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
-      }
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "meta": {},
+          "pluginVersion": "4.23.5",
+          "queryType": "table",
+          "rawSql": "SELECT\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\"\nFROM eduflow.metric_ai_correction_summary\nLIMIT 1",
+          "refId": "A"
+        }
+      ],
+      "title": "AI-оценок / исправлено",
+      "type": "stat"
     },
     {
-      "title": "Качество AI (сводка)",
-      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Средняя |Δ| (avg_abs_delta)",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 251
+              }
+            ]
+          }
+        ]
+      },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 18,
+        "w": 12,
+        "x": 12,
         "y": 0
       },
       "id": 4,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "zebraStriping": false
       },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля корректировок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_summary"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля корректировок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_summary",
+          "refId": "A"
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm"
-      }
+      "title": "Качество AI (сводка)",
+      "type": "table"
     },
     {
-      "title": "Доля корректировок по методу",
-      "type": "barchart",
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 5,
       "datasource": {
         "type": "grafana-clickhouse-datasource",
         "uid": "eduflow-clickhouse"
       },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "eduflow-clickhouse"
-          },
-          "editorType": "sql",
-          "queryType": "sql",
-          "format": 1,
-          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_by_method\nORDER BY method"
-        }
-      ],
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
             "fillOpacity": 85,
             "gradientMode": "hue",
-            "lineWidth": 1
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           }
         },
         "overrides": [
@@ -355,10 +373,20 @@
           }
         ]
       },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 5,
       "options": {
         "barRadius": 0.12,
         "barWidth": 0.65,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
+          "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -367,47 +395,75 @@
         "showValue": "always",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         },
-        "xTickLabelRotation": 0
-      }
-    },
-    {
-      "title": "AI vs Teacher (Spark) — ALL",
-      "type": "barchart",
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 8
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
-      "id": 6,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
-      },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id = 0\nORDER BY method"
+          "meta": {},
+          "pluginVersion": "4.23.5",
+          "queryType": "table",
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_by_method\nORDER BY method",
+          "refId": "A"
         }
       ],
+      "title": "Доля корректировок по методу",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
             "fillOpacity": 80,
-            "gradientMode": "none"
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           }
         },
         "overrides": [
@@ -462,11 +518,20 @@
           }
         ]
       },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 6,
       "options": {
         "barRadius": 0.1,
         "barWidth": 0.7,
+        "fullHighlight": false,
         "groupWidth": 0.7,
         "legend": {
+          "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -475,50 +540,48 @@
         "showValue": "auto",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         },
-        "xTickLabelRotation": 0
-      }
-    },
-    {
-      "title": "Доля корректировок по преподавателям",
-      "type": "bargauge",
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 17
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
-      "id": 7,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
-      },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  correction_rate AS \"Доля правок (correction_rate)\"\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 20"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id = 0\nORDER BY method",
+          "refId": "A"
         }
       ],
+      "title": "AI vs Teacher (Spark) — ALL",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
+          "max": 1,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#73BF69",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FADE2A",
@@ -534,66 +597,99 @@
               }
             ]
           },
-          "unit": "percentunit",
-          "min": 0,
-          "max": 1
-        },
-        "overrides": []
+          "unit": "percentunit"
+        }
       },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 7,
       "options": {
         "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
         "minVizHeight": 12,
         "minVizWidth": 0,
         "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": [],
           "fields": "",
-          "values": false
+          "values": true
         },
         "showUnfilled": true,
         "sizing": "auto",
+        "textMode": "auto",
         "valueMode": "color"
-      }
-    },
-    {
-      "title": "Средняя |Δ| по преподавателям",
-      "type": "barchart",
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 17
       },
-      "id": 8,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
-      },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  correction_rate AS \"Доля правок (correction_rate)\"\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY avg_abs_delta DESC\nLIMIT 20"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  correction_rate AS \"Доля правок (correction_rate)\"\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 20",
+          "refId": "A"
         }
       ],
+      "title": "Доля корректировок по преподавателям",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-YlOrRd"
+            "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "|Δ|",
+            "axisPlacement": "auto",
             "fillOpacity": 90,
-            "gradientMode": "scheme"
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
           }
         },
         "overrides": [
@@ -622,10 +718,20 @@
           }
         ]
       },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 8,
       "options": {
         "barRadius": 0.1,
         "barWidth": 0.75,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
+          "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -634,15 +740,63 @@
         "showValue": "auto",
         "stacking": "none",
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         },
-        "xTickLabelMaxLength": 22
-      }
+        "xTickLabelMaxLength": 22,
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "13.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "eduflow-clickhouse"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "sql",
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  correction_rate AS \"Доля правок (correction_rate)\"\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY avg_abs_delta DESC\nLIMIT 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Средняя |Δ| по преподавателям",
+      "type": "barchart"
     },
     {
-      "title": "Корректировки по преподавателям (таблица)",
-      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        }
+      },
       "gridPos": {
         "h": 10,
         "w": 12,
@@ -650,31 +804,60 @@
         "y": 29
       },
       "id": 9,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "zebraStriping": false
       },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  ai_grades AS \"AI-оценок (ai_grades)\"\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 40"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  ai_grades AS \"AI-оценок (ai_grades)\"\nFROM eduflow.metric_ai_correction_by_teacher\nORDER BY correction_rate DESC\nLIMIT 40",
+          "refId": "A"
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm"
-      }
+      "title": "Корректировки по преподавателям (таблица)",
+      "type": "table"
     },
     {
-      "title": "AI vs Teacher (Spark) — по преподавателям",
-      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        }
+      },
       "gridPos": {
         "h": 10,
         "w": 12,
@@ -682,31 +865,60 @@
         "y": 29
       },
       "id": 10,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "zebraStriping": false
       },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id > 0 AND method = 'ALL'\nORDER BY correction_rate DESC\nLIMIT 40"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id > 0 AND method = 'ALL'\nORDER BY correction_rate DESC\nLIMIT 40",
+          "refId": "A"
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm"
-      }
+      "title": "AI vs Teacher (Spark) — по преподавателям",
+      "type": "table"
     },
     {
-      "title": "AI vs Teacher — детально (Spark)",
-      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        }
+      },
       "gridPos": {
         "h": 9,
         "w": 24,
@@ -714,31 +926,60 @@
         "y": 39
       },
       "id": 11,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "zebraStriping": false
       },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_delta AS \"Средняя Δ (avg_delta)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nORDER BY teacher_id, method\nLIMIT 80"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  teacher_name AS \"Преподаватель (teacher_name)\",\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_delta AS \"Средняя Δ (avg_delta)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nORDER BY teacher_id, method\nLIMIT 80",
+          "refId": "A"
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm"
-      }
+      "title": "AI vs Teacher — детально (Spark)",
+      "type": "table"
     },
     {
-      "title": "Доля корректировок по методу (таблица)",
-      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        }
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -746,31 +987,60 @@
         "y": 48
       },
       "id": 12,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "zebraStriping": false
       },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_by_method\nORDER BY method"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\"\nFROM eduflow.metric_ai_correction_by_method\nORDER BY method",
+          "refId": "A"
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm"
-      }
+      "title": "Доля корректировок по методу (таблица)",
+      "type": "table"
     },
     {
-      "title": "AI vs Teacher (Spark) — ALL (таблица)",
-      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "eduflow-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        }
+      },
       "gridPos": {
         "h": 8,
         "w": 12,
@@ -778,42 +1048,43 @@
         "y": 48
       },
       "id": 13,
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "eduflow-clickhouse"
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "zebraStriping": false
       },
+      "pluginVersion": "13.3.0",
       "targets": [
         {
-          "refId": "A",
           "datasource": {
             "type": "grafana-clickhouse-datasource",
             "uid": "eduflow-clickhouse"
           },
           "editorType": "sql",
-          "queryType": "sql",
           "format": 1,
-          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_delta AS \"Средняя Δ (avg_delta)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id = 0\nORDER BY method"
+          "queryType": "sql",
+          "rawSql": "SELECT\n  method AS \"Способ проверки (method)\",\n  ai_grades AS \"AI-оценок (ai_grades)\",\n  corrected_cnt AS \"Исправлено (corrected_cnt)\",\n  correction_rate AS \"Доля правок (correction_rate)\",\n  avg_delta AS \"Средняя Δ (avg_delta)\",\n  avg_abs_delta AS \"Средняя |Δ| (avg_abs_delta)\",\n  median_abs_delta AS \"Медиана |Δ| (median_abs_delta)\"\nFROM eduflow.metric_ai_vs_teacher\nWHERE teacher_id = 0\nORDER BY method",
+          "refId": "A"
         }
       ],
-      "options": {
-        "showHeader": true,
-        "cellHeight": "sm"
-      }
+      "title": "AI vs Teacher (Spark) — ALL (таблица)",
+      "type": "table"
     }
   ],
-  "schemaVersion": 39,
-  "tags": [
-    "eduflow",
-    "ai"
-  ],
-  "templating": {
-    "list": []
-  },
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 42,
+  "tags": ["eduflow", "ai"],
   "time": {
     "from": "now-90d",
     "to": "now"
   },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
+  },
+  "timezone": "browser",
   "title": "EduFlow — Качество AI",
+  "version": 5,
   "uid": "eduflow-ai",
-  "version": 3
+  "id": 1206511329550336
 }
